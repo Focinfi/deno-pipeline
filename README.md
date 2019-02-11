@@ -46,8 +46,10 @@ Based on the `Handler`, we need to make some tools:
 import {
   Handler,
   Res,
+  Status,
   HandlerBuilder,
-  handelrBuilders
+  handelrBuilders,
+  buildLine
 } from "https://raw.githubusercontent.com/Focinfi/deno-pipeline/master/mod.ts";
 
 class BuilderSquare implements HandlerBuilder {
@@ -65,16 +67,10 @@ handelrBuilders.set("square", new BuilderSquare());
 ```
 
 ### Build a `Line` with config
-```typescript
-import {
-  Handler,
-  Res,
-  Status,
-  HandlerBuilder,
-  handelrBuilders,
-  buildLine
-} from "https://raw.githubusercontent.com/Focinfi/deno-pipeline/master/mod.ts";
+1. `builderName`: key in `handlerBuilders`
+2. `builderConf`: pass to `HandlerBuilder` to build a `Handler`
 
+```typescript
 let conf = [
   {
     builderName: "square",
@@ -90,6 +86,8 @@ line.handle({status: Status.New, data: 2})
 ```
 
 ### Build a `Line` contains a referenced `Handler`
+1. `refId`: exsiting key of `Handler` in the `handlers`
+
 ```typescript
 let handlers = new Map<string, Handler>([["my_square", line]])
 
@@ -114,6 +112,8 @@ refLine.handle({ status: Status.New, data: 2 })
 ```
 
 ### Build a `Line` contains parallel pipes
+Array Item will act as a `Parallel`, return a list of data returned by every pipe.
+
 ```typescript
 let parallelConf = [
   {
