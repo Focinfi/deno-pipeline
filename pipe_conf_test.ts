@@ -1,9 +1,10 @@
-import { newPipeConfWithObject } from "./pipe_conf.ts";
 import {
   assert,
   test,
   runTests
 } from "https://deno.land/x/testing/mod.ts";
+
+import { newPipeConfWithObject } from "./pipe_conf.ts";
 
 test(function testMissingTimeout() {
   assert.throws(() => {

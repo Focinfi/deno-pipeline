@@ -1,7 +1,13 @@
-import { Handler, Pipe, PipeType, Res, Status } from "./interfaces.ts";
-import { handelrBuilders } from "./builders.ts";
-import { buildPipe, handleWithTimeout } from "./pipe.ts";
-import { buildParallel } from "./parallel.ts";
+import {
+  Handler,
+  Pipe,
+  PipeType,
+  Res
+} from "./interfaces.ts";
+import {
+  buildPipe,
+  handleWithTimeout
+} from "./pipe.ts";
 
 export class Line implements Handler {
   pipes: Pipe[];
@@ -25,6 +31,21 @@ export class Line implements Handler {
       res = await pipe.handler.handle(res);
     }
     return res;
+  }
+
+  async handleVerbosely(res: Res): Promise<Res[]> {
+    let reses = new Array();
+    reses.push(JSON.parse(JSON.stringify(res)));
+    for (const pipe of this.pipes) {
+      if (pipe.type == PipeType.Single) {
+        res = await handleWithTimeout(pipe, res);
+      } else {
+        res = await pipe.handler.handle(res);
+      }
+
+      reses.push(JSON.parse(JSON.stringify(res)));
+    }
+    return reses;
   }
 }
 

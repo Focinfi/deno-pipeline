@@ -1,4 +1,10 @@
-import { Handler, Pipe, PipeType, Res, Status } from "./interfaces.ts";
+import {
+  Handler,
+  Pipe,
+  PipeType,
+  Res,
+  Status
+} from "./interfaces.ts";
 import { handelrBuilders } from "./builders.ts";
 import { newPipeConfWithObject } from "./pipe_conf.ts";
 import { buildParallel } from "./parallel.ts";

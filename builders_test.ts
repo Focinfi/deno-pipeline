@@ -1,4 +1,9 @@
-import { Handler, Res, HandlerBuilder, Status } from "./interfaces.ts";
+import {
+  Handler,
+  Res,
+  HandlerBuilder,
+  Status
+} from "./interfaces.ts";
 import { delay } from "./util.ts";
 import { handelrBuilders } from "./builders.ts";
 

@@ -5,7 +5,6 @@ import {
 } from "https://deno.land/x/testing/mod.ts";
 
 import { buildParallel } from "./parallel.ts";
-
 import { mockHandelrBuilders } from "./builders_test.ts";
 import { Status } from "./interfaces.ts";
 

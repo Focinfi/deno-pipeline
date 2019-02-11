@@ -51,6 +51,13 @@ test(async function testLine() {
 
   assert.equal(res.data, [4, 4])
   assert.assert(procMillisecond >= 500 && procMillisecond < 520);
+
+  const reses = await l.handleVerbosely({ status: Status.Ok, data: 2 });
+  assert.equal(reses.length, 3);
+  console.log(JSON.stringify(reses));
+  assert.equal(reses[0].data, 2);
+  assert.equal(reses[1].data, 4);
+  assert.equal(reses[2].data, [4, 4]);
 });
 
 runTests();

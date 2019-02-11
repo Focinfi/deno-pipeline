@@ -1,5 +1,13 @@
-import { Handler, Pipe, Res, Status } from "./interfaces.ts";
-import { buildPipe, handleWithTimeout } from "./pipe.ts";
+import {
+  Handler,
+  Pipe,
+  Res,
+  Status
+} from "./interfaces.ts";
+import {
+  buildPipe,
+  handleWithTimeout
+} from "./pipe.ts";
 
 export class Parallel implements Handler {
   pipes: Pipe[];

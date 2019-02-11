@@ -3,9 +3,16 @@ import {
   test,
   assert
 } from "https://deno.land/x/testing/mod.ts";
-
-import { Res, Pipe, PipeType, Status } from "./interfaces.ts"
-import { buildPipe, handleWithTimeout } from "./pipe.ts";
+import {
+  Res,
+  Pipe,
+  PipeType,
+  Status
+} from "./interfaces.ts"
+import {
+  buildPipe,
+  handleWithTimeout
+} from "./pipe.ts";
 import { handelrBuilders } from "./builders.ts";
 import { mockHandelrBuilders } from "./builders_test.ts";
 import { Parallel } from "./parallel.ts";
