@@ -35,7 +35,6 @@ export class Line implements Handler {
 
   async handleVerbosely(res: Res): Promise<Res[]> {
     let reses = new Array();
-    reses.push(JSON.parse(JSON.stringify(res)));
     for (const pipe of this.pipes) {
       if (pipe.type == PipeType.Single) {
         res = await handleWithTimeout(pipe, res);

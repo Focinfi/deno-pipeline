@@ -1,7 +1,5 @@
 ## deno-pipeline
 
---- 
-
 Configurable data pipeline in Deno.
 
 Data processing defined by `Handler`s like Unix pipeline. 
@@ -106,9 +104,10 @@ let refConf = [
 
 let refLine = buildLine(refConf, handlers);
 refLine.handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("data:", res.data))
+  .then((res) => console.log("ref line data:", res.data))
   .catch((res) => console.error(res.message)));
-// Output: data: 16
+// Output: 
+// ref line data: 16
 ```
 
 ### Build a `Line` contains parallel pipes
@@ -137,7 +136,21 @@ let parallelConf = [
 
 let parallelLine = buildLine(parallelConf, handlers);
 parallelLine.handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("data:", res.data))
+  .then((res) => console.log("parallel line data:", res.data))
   .catch((res) => console.error(res.message));
-// Output: data: [16, 16]
+// Output: 
+// parallel line data: [ 16, 16 ]
+```
+
+### `handleVerbosely`
+Returns a list of `Res` returned by every pipe; 
+
+```typescript
+parallelLine.handleVerbosely({ status: Status.New, data: 2 })
+  .then((reses) => reses.forEach((res, i) => console.log(i, "verbosely data:", res.data)))
+  .catch((reses) => console.error(reses));
+// Output:
+// 0 verbosely data: 2
+// 1 verbosely data: 4
+// 2 verbosely data: [ 16, 16 ] 
 ```
