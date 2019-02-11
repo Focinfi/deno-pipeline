@@ -2,6 +2,8 @@
 
 Configurable data pipeline in Deno.
 
+[Examples](https://github.com/Focinfi/deno-pipeline/blob/master/example.ts)
+
 Data processing defined by `Handler`s like Unix pipeline. 
 
 ```typescript
