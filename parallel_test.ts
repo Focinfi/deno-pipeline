@@ -4,13 +4,50 @@ import {
   assert
 } from "https://deno.land/x/testing/mod.ts";
 
-import { buildParallel } from "./buildParallel.ts";
+import { buildParallel } from "./parallel.ts";
 
-test(function testBuildParallel() {
+import { mockHandelrBuilders } from "./builders_test.ts";
+import { Status } from "./interfaces.ts";
+
+function buildMockDelayParallel(delay: number) {
+  mockHandelrBuilders();
   const conf = [
     {
-
+      builderName: "square",
+      timeout: 1000,
+      required: true,
+    },
+    {
+      builderName: "delay",
+      builderConf: {
+        delay: delay,
+      },
+      timeout: 1000,
+      required: true,
+    },
+    {
+      builderName: "delay",
+      builderConf: {
+        delay: delay,
+      },
+      timeout: 1000,
+      required: true,
     }
   ]
-  const parallel = buildParallel()
+
+  return buildParallel(conf)
+}
+
+test(async function testParallel() {
+  const p = buildMockDelayParallel(500);
+  assert.equal(p.pipes.length, 3);
+
+  const start = Date.now();
+  const res = await p.handle({ status: Status.Ok, data: 2 });
+  const procMillisecond = Date.now() - start;
+
+  assert.equal(res.data, [4, 2, 2])
+  assert.assert(procMillisecond >= 500 && procMillisecond < 520);
 });
+
+runTests();

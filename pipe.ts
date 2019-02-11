@@ -1,19 +1,26 @@
 import { Handler, Pipe, PipeType, Res, Status } from "./interfaces.ts";
 import { handelrBuilders } from "./builders.ts";
 import { newPipeConfWithObject } from "./pipe_conf.ts";
+import { buildParallel } from "./parallel.ts";
 import { delay } from "./util.ts";
 
 export const ErrRefHandlerNotFound = new Error('ref handler not found');
 export const ErrRefBuilderNotFound = new Error('ref builder not found');
 
-export function buildPipe(conf: object, handlers: Map<string, Handler>): Pipe {
-  // build a single pipe
-  // type check for pipeConf
+export function buildPipe(conf: object, handlers?: Map<string, Handler>): Pipe {
+  if (Array.isArray(conf)) {
+    const handler = buildParallel(conf, handlers);
+    return {
+      type: PipeType.Parallel,
+      conf: null,
+      handler: handler
+    }
+  }
+
   const pc = newPipeConfWithObject(conf);
 
-  // find an existing handler if refId set 
-  if (conf['refId']) {
-    if (!handlers.has(conf['refId'])) {
+  if ('refId' in conf) {
+    if (!handlers || !handlers.has(conf['refId'])) {
       throw ErrRefHandlerNotFound;
     }
 
@@ -24,7 +31,6 @@ export function buildPipe(conf: object, handlers: Map<string, Handler>): Pipe {
     }
   }
 
-  // build with builderConf
   if (!handelrBuilders.has(conf['builderName'])) {
     throw ErrRefBuilderNotFound;
   }
@@ -36,6 +42,7 @@ export function buildPipe(conf: object, handlers: Map<string, Handler>): Pipe {
   }
 }
 
+/** Handle res, throws err when failed/timeout and conf.required is true. */
 export async function handleWithTimeout(pipe: Pipe, res: Res): Promise<Res> {
   let rt: Res = {
     status: Status.New,
