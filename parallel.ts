@@ -1,0 +1,36 @@
+import { Handler, Pipe, Res, Status } from "./interfaces.ts";
+import { buildPipe, handleWithTimeout } from "./pipe.ts";
+
+export class Parallel implements Handler {
+  pipes: Pipe[];
+
+  constructor () {
+    this.pipes = new Array<Pipe>();
+  }
+
+  async handle(res: Res): Promise<Res> {
+    let reses = await Promise.all(this.pipes.map(pipe => {
+      return handleWithTimeout(pipe, res);
+    }));
+
+    return {
+      status: Status.Ok,
+      data: reses.map(res => res.data)
+    }
+  }
+}
+
+export function buildParallel(conf: any[], handlers: Map<string, Handler>): Parallel {
+  let parallel = new Parallel();
+  for (let pipeConf of conf) {
+    const pipe = buildPipe(pipeConf, handlers)
+    parallel.pipes.push(pipe);
+  }
+
+  return parallel;
+}
+
+export function buildParallelWithJson(jsonConf: string, handlers: Map<string, Handler>): Parallel {
+  const conf = JSON.parse(jsonConf);
+  return buildParallel(conf, handlers);
+}
