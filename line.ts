@@ -15,7 +15,7 @@ export class Line implements Handler {
    */
   async handle(res: Res): Promise<Res> {
     for (const pipe of this.pipes) {
-      res = await pipe.handler.handle(res);
+      res = await pipe.handle(res);
     }
     return res;
   }
@@ -24,7 +24,7 @@ export class Line implements Handler {
   async handleVerbosely(res: Res): Promise<Res[]> {
     let reses = new Array();
     for (const pipe of this.pipes) {
-      res = await pipe.handler.handle(res);
+      res = await pipe.handle(res);
       reses.push(JSON.parse(JSON.stringify(res)));
     }
     return reses;

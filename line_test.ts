@@ -55,4 +55,10 @@ test(async function testLine() {
   assert.equal(reses[1].data, [4, 4]);
 });
 
+test(function testLineFailed() {
+  const l = buildMockLine(1500);
+  assert.throwsAsync(async () => {
+    await l.handle({ status: Status.Ok, data: 2 });
+  });
+});
 runTests();
