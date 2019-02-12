@@ -19,7 +19,8 @@ export function buildPipe(conf: object, handlers?: Map<string, Handler>): Pipe {
     return {
       type: PipeType.Parallel,
       conf: null,
-      handler: handler
+      handler: handler,
+      handle
     }
   }
 
@@ -33,7 +34,8 @@ export function buildPipe(conf: object, handlers?: Map<string, Handler>): Pipe {
     return {
       type: PipeType.Single,
       conf: pc,
-      handler: handlers.get(conf['refId'])
+      handler: handlers.get(conf['refId']),
+      handle
     }
   }
 
@@ -44,20 +46,25 @@ export function buildPipe(conf: object, handlers?: Map<string, Handler>): Pipe {
   return {
     type: PipeType.Single,
     conf: pc,
-    handler: handelrBuilders.get(conf['builderName']).build(conf['builderConf'])
+    handler: handelrBuilders.get(conf['builderName']).build(conf['builderConf']),
+    handle
   }
 }
 
 /** Handle res, throws err when failed/timeout and conf.required is true. */
-export async function handleWithTimeout(pipe: Pipe, res: Res): Promise<Res> {
+export async function handle(res: Res): Promise<Res> {
+  // run handler.handle for a Parallel Pipe
+  if (this.conf.type == PipeType.Parallel) {
+    return this.handler.handle(res);
+  }
   let rt: Res = {
     status: Status.New,
     data: res.data,
     meta: res.meta
   };
   try {
-    const timer = delay(pipe.conf.timeout);
-    const handler = pipe.handler.handle(rt);
+    const timer = delay(this.conf.timeout);
+    const handler = this.handler.handle(rt);
     let r = await Promise.race([timer, handler]);
     if (r) {
       rt = r as Res;
@@ -76,12 +83,12 @@ export async function handleWithTimeout(pipe: Pipe, res: Res): Promise<Res> {
     }
   }
 
-  if (pipe.conf.required && rt.status != Status.Ok) {
+  if (this.conf.required && rt.status != Status.Ok) {
     throw rt;
   }
 
   if (rt.status != Status.Ok) {
-    rt.data = pipe.conf.defaultValue;
+    rt.data = this.conf.defaultValue;
   }
   return rt;
 }

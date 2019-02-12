@@ -5,21 +5,20 @@ import {
   Status
 } from "./interfaces.ts";
 import {
-  buildPipe,
-  handleWithTimeout
+  buildPipe
 } from "./pipe.ts";
 
 export class Parallel implements Handler {
   pipes: Pipe[];
 
-  constructor() {
+  constructor () {
     this.pipes = new Array<Pipe>();
   }
 
   /** Handle the res, run pipes concrrently */
   async handle(res: Res): Promise<Res> {
     let reses = await Promise.all(this.pipes.map(pipe => {
-      return handleWithTimeout(pipe, res);
+      return pipe.handle(res);
     }));
 
     return {

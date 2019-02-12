@@ -11,7 +11,7 @@ import {
 } from "./interfaces.ts"
 import {
   buildPipe,
-  handleWithTimeout
+  handle
 } from "./pipe.ts";
 import { handelrBuilders } from "./builders.ts";
 import { mockHandelrBuilders } from "./builders_test.ts";
@@ -52,7 +52,7 @@ test(async function testBuildPipeWithBuilderName() {
     required: true,
     defaultValue: undefined
   });
-  const r = await p.handler.handle({ status: Status.Ok, data: 1 })
+  const r = await p.handle({ status: Status.Ok, data: 1 })
   assert.equal(r.data, 1);
 });
 
@@ -84,7 +84,7 @@ test(async function testBuildPipeWithRefId() {
     defaultValue: undefined
   });
 
-  const r = await p.handler.handle({ status: Status.Ok, data: 1 })
+  const r = await p.handle({ status: Status.Ok, data: 1 })
   assert.equal(r.data, 1);
 });
 
@@ -99,7 +99,7 @@ test(function testHandleWithTimeout() {
   });
 
   assert.throwsAsync(async () => {
-    await handleWithTimeout(p, { status: Status.New });
+    await p.handle({ status: Status.New });
   });
 });
 
@@ -119,12 +119,12 @@ test(function testHandleWithFailed() {
   } as Pipe;
 
   assert.throwsAsync(async () => {
-    await handleWithTimeout(p, { status: Status.New });
+    await p.handle({ status: Status.New });
   });
 });
 
 test(async function testHandleWithDefaultValue() {
-  const p = {
+  const p: Pipe = {
     type: PipeType.Single,
     conf: {
       timeout: 1000,
@@ -135,10 +135,10 @@ test(async function testHandleWithDefaultValue() {
       async handle(res: Res): Promise<Res> {
         throw "failed";
       }
-    }
-
-  } as Pipe;
-  const d = await handleWithTimeout(p, { status: Status.New });
+    },
+    handle
+  };
+  const d = await p.handle({ status: Status.New });
   assert.equal(d.data, -1);
 });
 

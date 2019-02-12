@@ -32,7 +32,7 @@ export interface PipeConf {
   defaultValue?: any;
 }
 
-export interface Pipe {
+export interface Pipe extends Handler {
   type: PipeType;
   conf: PipeConf;
   handler: Handler;

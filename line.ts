@@ -5,14 +5,14 @@ import {
   Res
 } from "./interfaces.ts";
 import {
-  buildPipe,
-  handleWithTimeout
+  buildPipe
+  // handleWithTimeout
 } from "./pipe.ts";
 
 export class Line implements Handler {
   pipes: Pipe[];
 
-  constructor() {
+  constructor () {
     this.pipes = new Array<Pipe>();
   }
 
@@ -23,25 +23,16 @@ export class Line implements Handler {
    */
   async handle(res: Res): Promise<Res> {
     for (const pipe of this.pipes) {
-      if (pipe.type == PipeType.Single) {
-        res = await handleWithTimeout(pipe, res);
-        continue
-      }
-
       res = await pipe.handler.handle(res);
     }
-    return res;
+    return res
   }
 
+  /** Handle the res, return a list of Res for every step*/
   async handleVerbosely(res: Res): Promise<Res[]> {
     let reses = new Array();
     for (const pipe of this.pipes) {
-      if (pipe.type == PipeType.Single) {
-        res = await handleWithTimeout(pipe, res);
-      } else {
-        res = await pipe.handler.handle(res);
-      }
-
+      res = await pipe.handler.handle(res);
       reses.push(JSON.parse(JSON.stringify(res)));
     }
     return reses;
