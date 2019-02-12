@@ -39,8 +39,19 @@ class BuilderDelay implements HandlerBuilder {
   }
 }
 
+class BuilderFailed implements HandlerBuilder {
+  build(conf?: Map<string, any>): Handler {
+    return {
+      async handle(res: Res): Promise<Res> {
+        throw new Error("failed");
+      }
+    };
+  }
+}
+
 export function mockHandelrBuilders() {
   handelrBuilders.set("echo", new BuilderEcho());
   handelrBuilders.set("square", new BuilderSquare());
   handelrBuilders.set("delay", new BuilderDelay());
+  handelrBuilders.set("failed", new BuilderFailed());
 }

@@ -1,5 +1,5 @@
-import { Handler, Pipe, PipeType, Res } from "./interfaces.ts";
-import { buildPipe } from "./pipe.ts";
+import { Handler, Res } from "./interfaces.ts";
+import { Pipe } from "./pipe.ts";
 
 export class Line implements Handler {
   pipes: Pipe[];
@@ -35,7 +35,7 @@ export function buildLine(conf: any[], handlers?: Map<string, Handler>): Line {
   let line = new Line();
 
   for (const pipeConf of conf) {
-    line.pipes.push(buildPipe(pipeConf, handlers));
+    line.pipes.push(new Pipe(pipeConf, handlers));
   }
 
   return line;

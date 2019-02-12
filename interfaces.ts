@@ -20,20 +20,3 @@ export interface Handler {
 export interface HandlerBuilder {
   build(conf?: object): Handler;
 }
-
-export enum PipeType {
-  Single,
-  Parallel
-}
-
-export interface PipeConf {
-  timeout: number;
-  required: boolean;
-  defaultValue?: any;
-}
-
-export interface Pipe extends Handler {
-  type: PipeType;
-  conf: PipeConf;
-  handler: Handler;
-}

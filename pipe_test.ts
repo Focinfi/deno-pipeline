@@ -1,6 +1,6 @@
 import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
-import { Res, Pipe, PipeType, Status } from "./interfaces.ts";
-import { buildPipe, handle } from "./pipe.ts";
+import { Res, Status } from "./interfaces.ts";
+import { Pipe, PipeType } from "./pipe.ts";
 import { handelrBuilders } from "./builders.ts";
 import { mockHandelrBuilders } from "./builders_test.ts";
 import { Parallel } from "./parallel.ts";
@@ -9,7 +9,7 @@ mockHandelrBuilders();
 
 test(function testBuildPipeUnknownRefId() {
   assert.throws(() => {
-    buildPipe({
+    new Pipe({
       refId: "unknown",
       timeout: 1000,
       required: false
@@ -19,7 +19,7 @@ test(function testBuildPipeUnknownRefId() {
 
 test(function testBuildPipeUnknownBuilderName() {
   assert.throws(() => {
-    buildPipe({
+    new Pipe({
       timeout: 1000,
       required: true,
       builderName: "unkown"
@@ -28,7 +28,7 @@ test(function testBuildPipeUnknownBuilderName() {
 });
 
 test(async function testBuildPipeWithBuilderName() {
-  const p = buildPipe({
+  const p = new Pipe({
     timeout: 1000,
     required: true,
     builderName: "echo"
@@ -46,7 +46,7 @@ test(async function testBuildPipeWithBuilderName() {
 
 test(function testBuildPipeWithoutHandlers() {
   assert.throws(() => {
-    const p = buildPipe({
+    new Pipe({
       timeout: 1000,
       required: true,
       refId: "echo-demo"
@@ -59,7 +59,7 @@ test(async function testBuildPipeWithRefId() {
     ["echo-demo", handelrBuilders.get("echo").build()]
   ]);
 
-  const p = buildPipe(
+  const p = new Pipe(
     {
       timeout: 1000,
       required: true,
@@ -80,7 +80,7 @@ test(async function testBuildPipeWithRefId() {
 });
 
 test(function testHandleWithTimeout() {
-  const p = buildPipe({
+  const p = new Pipe({
     timeout: 500,
     required: true,
     builderName: "delay",
@@ -95,18 +95,11 @@ test(function testHandleWithTimeout() {
 });
 
 test(function testHandleWithFailed() {
-  const p = {
-    type: PipeType.Single,
-    conf: {
-      timeout: 1000,
-      required: true
-    },
-    handler: {
-      async handle(res: Res): Promise<Res> {
-        throw "failed";
-      }
-    }
-  } as Pipe;
+  const p = new Pipe({
+    timeout: 500,
+    required: true,
+    builderName: "failed"
+  });
 
   assert.throwsAsync(async () => {
     await p.handle({ status: Status.New });
@@ -114,20 +107,13 @@ test(function testHandleWithFailed() {
 });
 
 test(async function testHandleWithDefaultValue() {
-  const p: Pipe = {
-    type: PipeType.Single,
-    conf: {
-      timeout: 1000,
-      required: false,
-      defaultValue: -1
-    },
-    handler: {
-      async handle(res: Res): Promise<Res> {
-        throw "failed";
-      }
-    },
-    handle
-  };
+  const p = new Pipe({
+    timeout: 500,
+    required: false,
+    defaultValue: -1,
+    builderName: "failed"
+  });
+
   const d = await p.handle({ status: Status.New });
   assert.equal(d.data, -1);
 });
@@ -157,7 +143,7 @@ test(function testBuildParralPipe() {
     }
   ];
 
-  const pipe = buildPipe(conf);
+  const pipe = new Pipe(conf);
 
   assert.assert(pipe.handler instanceof Parallel);
 });

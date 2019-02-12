@@ -1,5 +1,5 @@
-import { Handler, Pipe, Res, Status } from "./interfaces.ts";
-import { buildPipe } from "./pipe.ts";
+import { Handler, Res, Status } from "./interfaces.ts";
+import { Pipe } from "./pipe.ts";
 
 export class Parallel implements Handler {
   pipes: Pipe[];
@@ -29,7 +29,7 @@ export function buildParallel(
 ): Parallel {
   let parallel = new Parallel();
   for (let pipeConf of conf) {
-    const pipe = buildPipe(pipeConf, handlers);
+    const pipe = new Pipe(pipeConf, handlers);
     parallel.pipes.push(pipe);
   }
 
