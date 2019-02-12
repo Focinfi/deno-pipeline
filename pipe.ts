@@ -49,7 +49,7 @@ export function buildPipe(conf: object, handlers?: Map<string, Handler>): Pipe {
 
 /** Handle res, throws err when failed/timeout and conf.required is true. */
 export async function handle(res: Res): Promise<Res> {
-  // run handler.handle for a Parallel Pipe
+  // run handler.handle directly for a Parallel Pipe
   if (this.conf.type == PipeType.Parallel) {
     return this.handler.handle(res);
   }

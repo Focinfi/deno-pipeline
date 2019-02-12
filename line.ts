@@ -1,8 +1,5 @@
 import { Handler, Pipe, PipeType, Res } from "./interfaces.ts";
-import {
-  buildPipe
-  // handleWithTimeout
-} from "./pipe.ts";
+import { buildPipe } from "./pipe.ts";
 
 export class Line implements Handler {
   pipes: Pipe[];
