@@ -1,4 +1,4 @@
-import { Handler, Res } from "./interfaces.ts";
+import { Handler, Res } from "./handler.ts";
 import { Pipe } from "./pipe.ts";
 
 export class Line implements Handler {

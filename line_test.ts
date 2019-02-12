@@ -1,7 +1,7 @@
 import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
 
-import { Status } from "./interfaces.ts";
-import { mockHandelrBuilders } from "./builders_test.ts";
+import { Status } from "./handler.ts";
+import { mockHandelrBuilders } from "./mock_test.ts";
 import { buildLine } from "./line.ts";
 
 function buildMockLine(delay: number) {

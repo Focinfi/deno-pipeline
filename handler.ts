@@ -20,3 +20,5 @@ export interface Handler {
 export interface HandlerBuilder {
   build(conf?: object): Handler;
 }
+
+export let handelrBuilders = new Map<string, HandlerBuilder>();

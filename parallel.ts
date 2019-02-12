@@ -1,4 +1,4 @@
-import { Handler, Res, Status } from "./interfaces.ts";
+import { Handler, Res, Status } from "./handler.ts";
 import { Pipe } from "./pipe.ts";
 
 export class Parallel implements Handler {

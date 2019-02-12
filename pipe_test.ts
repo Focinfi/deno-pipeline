@@ -1,8 +1,7 @@
 import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
-import { Res, Status } from "./interfaces.ts";
+import { Status, handelrBuilders } from "./handler.ts";
 import { Pipe, PipeType } from "./pipe.ts";
-import { handelrBuilders } from "./builders.ts";
-import { mockHandelrBuilders } from "./builders_test.ts";
+import { mockHandelrBuilders } from "./mock_test.ts";
 import { Parallel } from "./parallel.ts";
 
 mockHandelrBuilders();

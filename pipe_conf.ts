@@ -1,4 +1,4 @@
-import { PipeConf } from "./interfaces.ts";
+import { PipeConf } from "./pipe.ts";
 
 /**
  * Build a PipeConf with the given conf

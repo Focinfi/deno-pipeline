@@ -1,5 +1,4 @@
-import { Handler, Res, Status } from "./interfaces.ts";
-import { handelrBuilders } from "./builders.ts";
+import { Handler, Res, Status, handelrBuilders } from "./handler.ts";
 import { newPipeConfWithObject } from "./pipe_conf.ts";
 import { buildParallel } from "./parallel.ts";
 import { delay } from "./util.ts";

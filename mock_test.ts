@@ -1,6 +1,11 @@
-import { Handler, Res, HandlerBuilder, Status } from "./interfaces.ts";
+import {
+  Handler,
+  Res,
+  HandlerBuilder,
+  Status,
+  handelrBuilders
+} from "./handler.ts";
 import { delay } from "./util.ts";
-import { handelrBuilders } from "./builders.ts";
 
 class BuilderEcho implements HandlerBuilder {
   build(conf?: Map<string, any>): Handler {

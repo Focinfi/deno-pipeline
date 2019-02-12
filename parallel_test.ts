@@ -1,8 +1,8 @@
 import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
 
 import { buildParallel } from "./parallel.ts";
-import { mockHandelrBuilders } from "./builders_test.ts";
-import { Status } from "./interfaces.ts";
+import { mockHandelrBuilders } from "./mock_test.ts";
+import { Status } from "./handler.ts";
 
 function buildMockDelayParallel(delay: number) {
   mockHandelrBuilders();
