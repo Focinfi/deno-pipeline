@@ -14,7 +14,7 @@ export interface Res {
 
 export interface Handler {
   handle(res: Res): Promise<Res>;
-  handleVerbosely?(res: Res): Promise<Res[]>
+  handleVerbosely?(res: Res): Promise<Res[]>;
 }
 
 export interface HandlerBuilder {

@@ -49,4 +49,11 @@ test(async function testParallel() {
   assert.assert(procMillisecond >= 500 && procMillisecond < 520);
 });
 
+test(function testParallelFailed() {
+  const p = buildMockDelayParallel(1500);
+  assert.throwsAsync(async () => {
+    await p.handle({ status: Status.Ok, data: 2 });
+  });
+})
+
 runTests();
