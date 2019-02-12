@@ -50,7 +50,7 @@ import {
   HandlerBuilder,
   handelrBuilders,
   buildLine
-} from "https://raw.githubusercontent.com/Focinfi/deno-pipeline/master/mod.ts";
+} from "https://deno.land/x/pipeline/mod.ts";
 
 class BuilderSquare implements HandlerBuilder {
   build(conf?: Map<string, any>): Handler {
