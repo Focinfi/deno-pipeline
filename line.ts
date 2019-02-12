@@ -1,9 +1,4 @@
-import {
-  Handler,
-  Pipe,
-  PipeType,
-  Res
-} from "./interfaces.ts";
+import { Handler, Pipe, PipeType, Res } from "./interfaces.ts";
 import {
   buildPipe
   // handleWithTimeout
@@ -12,7 +7,7 @@ import {
 export class Line implements Handler {
   pipes: Pipe[];
 
-  constructor () {
+  constructor() {
     this.pipes = new Array<Pipe>();
   }
 
@@ -25,7 +20,7 @@ export class Line implements Handler {
     for (const pipe of this.pipes) {
       res = await pipe.handler.handle(res);
     }
-    return res
+    return res;
   }
 
   /** Handle the res, return a list of Res for every step*/
@@ -49,7 +44,10 @@ export function buildLine(conf: any[], handlers?: Map<string, Handler>): Line {
   return line;
 }
 
-export function buildLineWithJson(jsonConf: string, handlers?: Map<string, Handler>): Line {
-  const conf = JSON.parse(jsonConf)
+export function buildLineWithJson(
+  jsonConf: string,
+  handlers?: Map<string, Handler>
+): Line {
+  const conf = JSON.parse(jsonConf);
   return buildLine(conf, handlers);
 }

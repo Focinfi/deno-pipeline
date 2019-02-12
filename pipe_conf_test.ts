@@ -1,8 +1,4 @@
-import {
-  assert,
-  test,
-  runTests
-} from "https://deno.land/x/testing/mod.ts";
+import { assert, test, runTests } from "https://deno.land/x/testing/mod.ts";
 
 import { newPipeConfWithObject } from "./pipe_conf.ts";
 
@@ -40,7 +36,11 @@ test(function testMissingDefaultValue() {
 });
 
 test(function testReqiredFalse() {
-  const conf = newPipeConfWithObject({ timeout: 1, required: false, defaultValue: 2 });
+  const conf = newPipeConfWithObject({
+    timeout: 1,
+    required: false,
+    defaultValue: 2
+  });
   assert.equal(conf, {
     timeout: 1,
     required: false,

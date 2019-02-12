@@ -1,18 +1,6 @@
-import {
-  runTests,
-  test,
-  assert
-} from "https://deno.land/x/testing/mod.ts";
-import {
-  Res,
-  Pipe,
-  PipeType,
-  Status
-} from "./interfaces.ts"
-import {
-  buildPipe,
-  handle
-} from "./pipe.ts";
+import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
+import { Res, Pipe, PipeType, Status } from "./interfaces.ts";
+import { buildPipe, handle } from "./pipe.ts";
 import { handelrBuilders } from "./builders.ts";
 import { mockHandelrBuilders } from "./builders_test.ts";
 import { Parallel } from "./parallel.ts";
@@ -25,7 +13,7 @@ test(function testBuildPipeUnknownRefId() {
       refId: "unknown",
       timeout: 1000,
       required: false
-    })
+    });
   });
 });
 
@@ -35,7 +23,7 @@ test(function testBuildPipeUnknownBuilderName() {
       timeout: 1000,
       required: true,
       builderName: "unkown"
-    })
+    });
   });
 });
 
@@ -44,7 +32,7 @@ test(async function testBuildPipeWithBuilderName() {
     timeout: 1000,
     required: true,
     builderName: "echo"
-  })
+  });
 
   assert.equal(p.type, PipeType.Single);
   assert.equal(p.conf, {
@@ -52,7 +40,7 @@ test(async function testBuildPipeWithBuilderName() {
     required: true,
     defaultValue: undefined
   });
-  const r = await p.handle({ status: Status.Ok, data: 1 })
+  const r = await p.handle({ status: Status.Ok, data: 1 });
   assert.equal(r.data, 1);
 });
 
@@ -71,11 +59,14 @@ test(async function testBuildPipeWithRefId() {
     ["echo-demo", handelrBuilders.get("echo").build()]
   ]);
 
-  const p = buildPipe({
-    timeout: 1000,
-    required: true,
-    refId: "echo-demo"
-  }, handlers);
+  const p = buildPipe(
+    {
+      timeout: 1000,
+      required: true,
+      refId: "echo-demo"
+    },
+    handlers
+  );
 
   assert.equal(p.type, PipeType.Single);
   assert.equal(p.conf, {
@@ -84,7 +75,7 @@ test(async function testBuildPipeWithRefId() {
     defaultValue: undefined
   });
 
-  const r = await p.handle({ status: Status.Ok, data: 1 })
+  const r = await p.handle({ status: Status.Ok, data: 1 });
   assert.equal(r.data, 1);
 });
 
@@ -115,7 +106,6 @@ test(function testHandleWithFailed() {
         throw "failed";
       }
     }
-
   } as Pipe;
 
   assert.throwsAsync(async () => {
@@ -129,7 +119,7 @@ test(async function testHandleWithDefaultValue() {
     conf: {
       timeout: 1000,
       required: false,
-      defaultValue: -1,
+      defaultValue: -1
     },
     handler: {
       async handle(res: Res): Promise<Res> {
@@ -147,23 +137,23 @@ test(function testBuildParralPipe() {
     {
       builderName: "square",
       timeout: 1000,
-      required: true,
+      required: true
     },
     {
       builderName: "delay",
       builderConf: {
-        delay: 500,
+        delay: 500
       },
       timeout: 1000,
-      required: true,
+      required: true
     },
     {
       builderName: "delay",
       builderConf: {
-        delay: 500,
+        delay: 500
       },
       timeout: 1000,
-      required: true,
+      required: true
     }
   ];
 

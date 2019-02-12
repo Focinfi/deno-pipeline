@@ -1,12 +1,8 @@
-import {
-  runTests,
-  test,
-  assert
-} from "https://deno.land/x/testing/mod.ts";
+import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
 
 import { Status } from "./interfaces.ts";
 import { mockHandelrBuilders } from "./builders_test.ts";
-import { buildLine } from "./line.ts"
+import { buildLine } from "./line.ts";
 
 function buildMockLine(delay: number) {
   mockHandelrBuilders();
@@ -23,7 +19,7 @@ function buildMockLine(delay: number) {
         required: true,
         builderName: "delay",
         builderConf: {
-          delay: delay,
+          delay: delay
         }
       },
       {
@@ -31,13 +27,13 @@ function buildMockLine(delay: number) {
         required: true,
         builderName: "delay",
         builderConf: {
-          delay: delay,
+          delay: delay
         }
       }
     ]
-  ]
+  ];
 
-  return buildLine(conf)
+  return buildLine(conf);
 }
 
 test(async function testLine() {
@@ -49,7 +45,7 @@ test(async function testLine() {
   const res = await l.handle({ status: Status.Ok, data: 2 });
   const procMillisecond = Date.now() - start;
 
-  assert.equal(res.data, [4, 4])
+  assert.equal(res.data, [4, 4]);
   assert.assert(procMillisecond >= 500 && procMillisecond < 520);
 
   // const reses = await l.handleVerbosely({ status: Status.Ok, data: 2 });

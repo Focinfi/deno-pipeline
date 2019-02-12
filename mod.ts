@@ -4,21 +4,13 @@ export {
   Handler,
   HandlerBuilder,
   Pipe,
-  PipeType, 
+  PipeType,
   PipeConf
 } from "./interfaces.ts";
 
-export {
-  Line,
-  buildLineWithJson,
-  buildLine
-} from "./line.ts";
+export { Line, buildLineWithJson, buildLine } from "./line.ts";
 
-export {
-  Parallel,
-  buildParallel,
-  buildParallelWithJson
-} from "./parallel.ts";
+export { Parallel, buildParallel, buildParallelWithJson } from "./parallel.ts";
 
 export { buildPipe } from "./pipe.ts";
 

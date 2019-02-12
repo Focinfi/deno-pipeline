@@ -1,9 +1,4 @@
-import {
-  Handler,
-  Res,
-  HandlerBuilder,
-  Status
-} from "./interfaces.ts";
+import { Handler, Res, HandlerBuilder, Status } from "./interfaces.ts";
 import { delay } from "./util.ts";
 import { handelrBuilders } from "./builders.ts";
 
@@ -13,7 +8,7 @@ class BuilderEcho implements HandlerBuilder {
       async handle(res: Res): Promise<Res> {
         return new Promise(resolve => resolve(res));
       }
-    }
+    };
   }
 }
 
@@ -27,7 +22,7 @@ class BuilderSquare implements HandlerBuilder {
           meta: res.meta
         };
       }
-    }
+    };
   }
 }
 
@@ -36,11 +31,11 @@ class BuilderDelay implements HandlerBuilder {
     return {
       async handle(res: Res): Promise<Res> {
         if (conf) {
-          await delay(conf['delay']);
+          await delay(conf["delay"]);
         }
         return res;
       }
-    }
+    };
   }
 }
 

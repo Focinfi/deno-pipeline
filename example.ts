@@ -14,7 +14,7 @@ class BuilderSquare implements HandlerBuilder {
         res.data = res.data * res.data;
         return res;
       }
-    }
+    };
   }
 }
 
@@ -29,7 +29,7 @@ let conf = [
 ];
 let line = buildLine(conf);
 
-let handlers = new Map<string, Handler>([["my_square", line]])
+let handlers = new Map<string, Handler>([["my_square", line]]);
 
 let parallelConf = [
   {
@@ -52,9 +52,10 @@ let parallelConf = [
 ];
 
 let parallelLine = buildLine(parallelConf, handlers);
-parallelLine.handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("parallel line data:", res.data))
-  .catch((res) => console.error(res.message))
+parallelLine
+  .handle({ status: Status.New, data: 2 })
+  .then(res => console.log("parallel line data:", res.data))
+  .catch(res => console.error(res.message));
 
 let refConf = [
   {
@@ -70,10 +71,14 @@ let refConf = [
 ];
 
 let refLine = buildLine(refConf, handlers);
-refLine.handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("ref line data:", res.data))
-  .catch((res) => console.error(res.message))
+refLine
+  .handle({ status: Status.New, data: 2 })
+  .then(res => console.log("ref line data:", res.data))
+  .catch(res => console.error(res.message));
 
-parallelLine.handleVerbosely({ status: Status.New, data: 2 })
-  .then((reses) => reses.forEach((res, i) => console.log(i, "verbosely data:", res.data)))
-  .catch((reses) => console.error(reses));  
+parallelLine
+  .handleVerbosely({ status: Status.New, data: 2 })
+  .then(reses =>
+    reses.forEach((res, i) => console.log(i, "verbosely data:", res.data))
+  )
+  .catch(reses => console.error(reses));
