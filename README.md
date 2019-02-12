@@ -82,7 +82,8 @@ let line = buildLine(conf);
 line.handle({status: Status.New, data: 2})
     .then((res) => console.log("data:", res.data))
     .catch((res) => console.error(res.message));
-// Output: data: 4
+// Output: 
+// data: 4
 ```
 
 ### Build a `Line` contains a referenced `Handler`
@@ -152,7 +153,6 @@ parallelLine.handleVerbosely({ status: Status.New, data: 2 })
   .then((reses) => reses.forEach((res, i) => console.log(i, "verbosely data:", res.data)))
   .catch((reses) => console.error(reses));
 // Output:
-// 0 verbosely data: 2
-// 1 verbosely data: 4
-// 2 verbosely data: [ 16, 16 ] 
+// 0 verbosely data: 4
+// 1 verbosely data: [ 16, 16 ] 
 ```
