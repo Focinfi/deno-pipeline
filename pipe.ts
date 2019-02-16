@@ -21,6 +21,10 @@ export class Pipe implements Handler {
   type: PipeType;
   conf: PipeConf;
   handler: Handler;
+  refId?: string;
+  builderName?: string;
+  builderConf?: object;
+  desc?: string;
 
   constructor(conf: object, handlers?: Map<string, Handler>) {
     if (Array.isArray(conf)) {
@@ -37,6 +41,7 @@ export class Pipe implements Handler {
         throw ErrRefHandlerNotFound;
       }
 
+      this.refId = conf["refId"];
       this.type = PipeType.Single;
       this.conf = pc;
       this.handler = handlers.get(conf["refId"]);
@@ -52,6 +57,8 @@ export class Pipe implements Handler {
     this.handler = handelrBuilders
       .get(conf["builderName"])
       .build(conf["builderConf"]);
+    this.builderConf = conf["builderConf"];
+    this.desc = conf["desc"];
   }
 
   async handle(res: Res): Promise<Res> {
