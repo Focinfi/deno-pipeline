@@ -1,23 +1,28 @@
 import {
-  Handler,
   Res,
+  Handler,
   Status,
-  HandlerBuilder,
-  handelrBuilders,
   buildLine,
-} from "https://deno.land/x/pipeline/mod.ts";
+  HandlerBuilder,
+} from "https://deno.land/x/pipeline@v1.1.2/mod.ts";
 
-class BuilderSquare implements HandlerBuilder {
-  build(conf?: Map<string, any>): Handler {
+const builders = {
+  getBuilder(name: string): HandlerBuilder {
     return {
-      async handle(res: Res): Promise<Res> {
-        res.data = res.data * res.data;
-        return res;
+      buildHandler(): Handler {
+        return {
+          async handle(res: Res): Promise<Res> {
+            return {
+              status: Status.Ok,
+              data: res.data * res.data,
+              meta: res.meta,
+            } as Res;
+          },
+        };
       },
     };
-  }
-}
-handelrBuilders.set("square", new BuilderSquare());
+  },
+};
 
 let conf = [
   {
@@ -26,7 +31,7 @@ let conf = [
     required: true,
   },
 ];
-let line = buildLine(conf);
+let line = buildLine(conf, builders);
 line
   .handle({ status: Status.New, data: 2 })
   .then((res) => console.log("data:", res.data))
@@ -34,7 +39,6 @@ line
 // Output:
 // data: 4
 
-let handlers = new Map<string, Handler>([["my_square", line]]);
 let refConf = [
   {
     refId: "my_square",
@@ -48,7 +52,13 @@ let refConf = [
   },
 ];
 
-let refLine = buildLine(refConf, handlers);
+const handlers = {
+  getHandler(id: string): Handler {
+    return builders.getBuilder("square").buildHandler();
+  },
+};
+
+let refLine = buildLine(refConf, builders, handlers);
 refLine
   .handle({ status: Status.New, data: 2 })
   .then((res) => console.log("ref line data:", res.data))
@@ -76,7 +86,7 @@ let parallelConf = [
   ],
 ];
 
-let parallelLine = buildLine(parallelConf, handlers);
+let parallelLine = buildLine(parallelConf, builders, handlers);
 parallelLine
   .handle({ status: Status.New, data: 2 })
   .then((res) => console.log("parallel line data:", res.data))
@@ -87,9 +97,11 @@ parallelLine
 parallelLine
   .handleVerbosely({ status: Status.New, data: 2 })
   .then((reses) =>
-    reses.forEach((res, i) => console.log(i, "verbosely data:", res.data))
+    reses.forEach((res, i) =>
+      console.log("pipe[", i + 1, "] response:", res.data)
+    )
   )
   .catch((reses) => console.error(reses));
 // Output:
-// 0 verbosely data: 4
-// 1 verbosely data: [ 16, 16 ]
+// 1 verbosely data: 4
+// 2 verbosely data: [ 16, 16 ]
