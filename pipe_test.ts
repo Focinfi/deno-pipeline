@@ -1,150 +1,110 @@
-import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
-import { Status, handelrBuilders } from "./handler.ts";
-import { Pipe, PipeType } from "./pipe.ts";
-import { mockHandelrBuilders } from "./mock_test.ts";
-import { Parallel } from "./parallel.ts";
+import {
+  assertEquals,
+  assertThrows,
+} from "https://deno.land/std/testing/asserts.ts";
+import { handlerBuilders } from "./handler.ts";
+import { Pipe, PipeConf, PipeType } from "./pipe.ts";
+import { mockHandlerBuilders } from "./mock_test.ts";
 
-mockHandelrBuilders();
+mockHandlerBuilders();
 
-test(function testBuildPipeUnknownRefId() {
-  assert.throws(() => {
-    new Pipe({
-      refId: "unknown",
-      timeout: 1000,
-      required: false
+Deno.test({
+  name: "build with unknown ref id",
+  fn(): void {
+    assertThrows(() => {
+      new Pipe({
+        refId: "nukonw",
+        timeout: 1000,
+        required: true,
+      });
     });
-  });
+  },
 });
 
-test(function testBuildPipeUnknownBuilderName() {
-  assert.throws(() => {
-    new Pipe({
+Deno.test({
+  name: "build with unknown builder name",
+  fn(): void {
+    assertThrows(() => {
+      new Pipe({
+        timeout: 1000,
+        required: true,
+        builderName: "unknown",
+      });
+    });
+  },
+});
+
+Deno.test({
+  name: "build with builder name",
+  fn(): void {
+    const p = new Pipe({
       timeout: 1000,
       required: true,
-      builderName: "unkown"
+      builderName: "echo",
     });
-  });
-});
-
-test(async function testBuildPipeWithBuilderName() {
-  const p = new Pipe({
-    timeout: 1000,
-    required: true,
-    builderName: "echo"
-  });
-
-  assert.equal(p.type, PipeType.Single);
-  assert.equal(p.conf, {
-    timeout: 1000,
-    required: true,
-    defaultValue: undefined
-  });
-  const r = await p.handle({ status: Status.Ok, data: 1 });
-  assert.equal(r.data, 1);
-});
-
-test(function testBuildPipeWithoutHandlers() {
-  assert.throws(() => {
-    new Pipe({
+    assertEquals(p.type, PipeType.Single);
+    assertEquals(p.conf, {
       timeout: 1000,
       required: true,
-      refId: "echo-demo"
+      builderName: "echo",
     });
-  });
+  },
 });
 
-test(async function testBuildPipeWithRefId() {
-  const handlers = new Map([
-    ["echo-demo", handelrBuilders.get("echo").build()]
-  ]);
-
-  const p = new Pipe(
-    {
-      timeout: 1000,
-      required: true,
-      refId: "echo-demo"
-    },
-    handlers
-  );
-
-  assert.equal(p.type, PipeType.Single);
-  assert.equal(p.conf, {
-    timeout: 1000,
-    required: true,
-    defaultValue: undefined
-  });
-
-  const r = await p.handle({ status: Status.Ok, data: 1 });
-  assert.equal(r.data, 1);
-});
-
-test(function testHandleWithTimeout() {
-  const p = new Pipe({
-    timeout: 500,
-    required: true,
-    builderName: "delay",
-    builderConf: {
-      delay: 1000
+Deno.test({
+  name: "build withd ref id",
+  fn(): void {
+    const echoBuilder = handlerBuilders.get("echo");
+    if (!echoBuilder) {
+      throw Error("echo builder not found");
     }
-  });
-
-  assert.throwsAsync(async () => {
-    await p.handle({ status: Status.New });
-  });
-});
-
-test(function testHandleWithFailed() {
-  const p = new Pipe({
-    timeout: 500,
-    required: true,
-    builderName: "failed"
-  });
-
-  assert.throwsAsync(async () => {
-    await p.handle({ status: Status.New });
-  });
-});
-
-test(async function testHandleWithDefaultValue() {
-  const p = new Pipe({
-    timeout: 500,
-    required: false,
-    defaultValue: -1,
-    builderName: "failed"
-  });
-
-  const d = await p.handle({ status: Status.New });
-  assert.equal(d.data, -1);
-});
-
-test(function testBuildParralPipe() {
-  const conf = [
-    {
-      builderName: "square",
-      timeout: 1000,
-      required: true
-    },
-    {
-      builderName: "delay",
-      builderConf: {
-        delay: 500
+    const p = new Pipe(
+      {
+        timeout: 1000,
+        required: true,
+        refId: "echo-demo",
       },
+      new Map([
+        ["echo-demo", echoBuilder.build()],
+      ]),
+    );
+    assertEquals(p.type, PipeType.Single);
+    assertEquals(p.conf, {
       timeout: 1000,
-      required: true
-    },
-    {
-      builderName: "delay",
-      builderConf: {
-        delay: 500
-      },
-      timeout: 1000,
-      required: true
-    }
-  ];
-
-  const pipe = new Pipe(conf);
-
-  assert.assert(pipe.handler instanceof Parallel);
+      required: true,
+      refId: "echo-demo",
+    });
+  },
 });
 
-runTests();
+Deno.test({
+  name: "build parrall pipe",
+  fn(): void {
+    const delayMap = new Map<string, any>([
+      ["delay", 500],
+    ]);
+
+    const conf = [
+      {
+        builderName: "square",
+        timeout: 1000,
+        required: true,
+      },
+      {
+        builderName: "delay",
+        builderConf: delayMap,
+        timeout: 1000,
+        required: true,
+      },
+      {
+        builderName: "delay",
+        builderConf: delayMap,
+        timeout: 1000,
+        required: true,
+      },
+    ];
+
+    const p = new Pipe(conf);
+    assertEquals(p.type, PipeType.Parallel);
+  },
+});

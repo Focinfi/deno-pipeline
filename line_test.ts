@@ -1,64 +1,112 @@
-import { runTests, test, assert } from "https://deno.land/x/testing/mod.ts";
-
+import {
+  assertEquals,
+  assertThrowsAsync,
+} from "https://deno.land/std/testing/asserts.ts";
 import { Status } from "./handler.ts";
-import { mockHandelrBuilders } from "./mock_test.ts";
+import { mockHandlerBuilders } from "./mock_test.ts";
 import { buildLine } from "./line.ts";
 
-function buildMockLine(delay: number) {
-  mockHandelrBuilders();
-  const conf = [
-    {
-      timeout: 500,
-      required: false,
-      defaultValue: 4,
-      builderName: "square"
-    },
-    [
+mockHandlerBuilders();
+
+Deno.test({
+  name: "build a new line",
+  async fn(): Promise<void> {
+    const l = buildLine([
       {
-        timeout: 1000,
+        timeout: 500,
         required: true,
-        builderName: "delay",
-        builderConf: {
-          delay: delay
-        }
+        builderName: "square",
       },
       {
-        timeout: 1000,
+        timeout: 500,
+        required: true,
+        builderName: "square",
+      },
+    ]);
+    const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
+    assertEquals(status, Status.Ok);
+    assertEquals(data, 16);
+
+    const reses = await l.handleVerbosely({ status: Status.Ok, data: 2 });
+    assertEquals(
+      reses.map((res) => {
+        return res.data;
+      }),
+      [4, 16],
+    );
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "build a new line with timeout",
+  async fn(): Promise<void> {
+    const l = buildLine([
+      {
+        timeout: 100,
         required: true,
         builderName: "delay",
-        builderConf: {
-          delay: delay
+        builderConf: new Map<string, any>([
+          ["delay", 200],
+        ]),
+      },
+    ]);
+
+    await assertThrowsAsync(
+      async (): Promise<void> => {
+        try {
+          await l.handle(
+            { status: Status.Ok, data: 1 },
+          );
+        } catch (e) {
+          console.log("message:", e.message);
+          throw e;
         }
-      }
-    ]
-  ];
-
-  return buildLine(conf);
-}
-
-test(async function testLine() {
-  const l = buildMockLine(500);
-
-  assert.equal(l.pipes.length, 2);
-
-  const start = Date.now();
-  const res = await l.handle({ status: Status.Ok, data: 2 });
-  const procMillisecond = Date.now() - start;
-
-  assert.equal(res.data, [4, 4]);
-  assert.assert(procMillisecond >= 500 && procMillisecond < 520);
-
-  const reses = await l.handleVerbosely({ status: Status.Ok, data: 2 });
-  assert.equal(reses.length, 2);
-  console.log(JSON.stringify(reses));
-  assert.equal(reses[0].data, 4);
-  assert.equal(reses[1].data, [4, 4]);
+      },
+    );
+  },
 });
 
-test(function testLineFailed() {
-  const l = buildMockLine(1500);
-  assert.throwsAsync(async () => {
-    await l.handle({ status: Status.Ok, data: 2 });
-  });
+Deno.test({
+  name: "build a new build with failed pipe",
+  async fn(): Promise<void> {
+    const l = buildLine([
+      {
+        timeout: 100,
+        required: true,
+        builderName: "failed",
+      },
+    ]);
+
+    await assertThrowsAsync(
+      async (): Promise<void> => {
+        try {
+          await l.handle(
+            { status: Status.Ok, data: 1 },
+          );
+        } catch (e) {
+          console.log("message:", e.message);
+          throw e;
+        }
+      },
+    );
+  },
 });
-runTests();
+
+Deno.test({
+  name: "build a line with default value",
+  async fn(): Promise<void> {
+    const l = buildLine([
+      {
+        timeout: 100,
+        required: false,
+        defaultValue: 1,
+        builderName: "failed",
+      },
+    ]);
+    const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
+    assertEquals(status, Status.InternalFailed);
+    assertEquals(data, 1);
+  },
+});

@@ -43,7 +43,7 @@ export function buildLine(conf: any[], handlers?: Map<string, Handler>): Line {
 
 export function buildLineWithJson(
   jsonConf: string,
-  handlers?: Map<string, Handler>
+  handlers?: Map<string, Handler>,
 ): Line {
   const conf = JSON.parse(jsonConf);
   return buildLine(conf, handlers);
