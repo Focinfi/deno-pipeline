@@ -1,4 +1,9 @@
-import { Handler, Res } from "./handler.ts";
+import {
+  Handler,
+  HandlerBuilderGetter,
+  HandlerGetter,
+  Res,
+} from "./handler.ts";
 import { Pipe } from "./pipe.ts";
 
 export class Line implements Handler {
@@ -31,11 +36,15 @@ export class Line implements Handler {
   }
 }
 
-export function buildLine(conf: any[], handlers?: Map<string, Handler>): Line {
+export function buildLine(
+  conf: any[],
+  builders?: HandlerBuilderGetter,
+  handlers?: HandlerGetter,
+): Line {
   let line = new Line();
 
   for (const pipeConf of conf) {
-    line.pipes.push(new Pipe(pipeConf, handlers));
+    line.pipes.push(new Pipe(pipeConf, builders, handlers));
   }
 
   return line;
@@ -43,8 +52,9 @@ export function buildLine(conf: any[], handlers?: Map<string, Handler>): Line {
 
 export function buildLineWithJson(
   jsonConf: string,
-  handlers?: Map<string, Handler>,
+  builders?: HandlerBuilderGetter,
+  handlers?: HandlerGetter,
 ): Line {
   const conf = JSON.parse(jsonConf);
-  return buildLine(conf, handlers);
+  return buildLine(conf, builders, handlers);
 }

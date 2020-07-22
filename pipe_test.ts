@@ -2,18 +2,16 @@ import {
   assertEquals,
   assertThrows,
 } from "https://deno.land/std/testing/asserts.ts";
-import { handlerBuilders } from "./handler.ts";
+import { Handler, HandlerBuilder } from "./handler.ts";
 import { Pipe, PipeConf, PipeType } from "./pipe.ts";
-import { mockHandlerBuilders } from "./mock_test.ts";
-
-mockHandlerBuilders();
+import { HandlerBuilderEcho, TestBuilders } from "./mock_test.ts";
 
 Deno.test({
   name: "build with unknown ref id",
   fn(): void {
     assertThrows(() => {
       new Pipe({
-        refId: "nukonw",
+        refId: "unknown",
         timeout: 1000,
         required: true,
       });
@@ -41,7 +39,7 @@ Deno.test({
       timeout: 1000,
       required: true,
       builderName: "echo",
-    });
+    }, TestBuilders);
     assertEquals(p.type, PipeType.Single);
     assertEquals(p.conf, {
       timeout: 1000,
@@ -54,19 +52,18 @@ Deno.test({
 Deno.test({
   name: "build withd ref id",
   fn(): void {
-    const echoBuilder = handlerBuilders.get("echo");
-    if (!echoBuilder) {
-      throw Error("echo builder not found");
-    }
     const p = new Pipe(
       {
         timeout: 1000,
         required: true,
         refId: "echo-demo",
       },
-      new Map([
-        ["echo-demo", echoBuilder.build()],
-      ]),
+      TestBuilders,
+      {
+        getHandler(id: string): Handler {
+          return HandlerBuilderEcho.buildHandler();
+        },
+      },
     );
     assertEquals(p.type, PipeType.Single);
     assertEquals(p.conf, {
@@ -78,7 +75,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "build parrall pipe",
+  name: "build parallel pipe",
   fn(): void {
     const delayMap = new Map<string, any>([
       ["delay", 500],
@@ -104,7 +101,7 @@ Deno.test({
       },
     ];
 
-    const p = new Pipe(conf);
+    const p = new Pipe(conf, TestBuilders);
     assertEquals(p.type, PipeType.Parallel);
   },
 });

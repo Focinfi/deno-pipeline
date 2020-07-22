@@ -3,7 +3,6 @@ export {
   Res,
   Handler,
   HandlerBuilder,
-  handlerBuilders,
 } from "./handler.ts";
 
 export { Pipe, PipeType, PipeConf } from "./pipe.ts";

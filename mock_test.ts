@@ -3,12 +3,11 @@ import {
   Res,
   HandlerBuilder,
   Status,
-  handlerBuilders,
 } from "./handler.ts";
 import { delay } from "https://deno.land/std/async/delay.ts";
 
-class BuilderEcho implements HandlerBuilder {
-  build(conf?: Map<string, any>): Handler {
+class Echo implements HandlerBuilder {
+  buildHandler(conf?: Map<string, any>): Handler {
     return {
       async handle(res: Res): Promise<Res> {
         return new Promise((resolve) => resolve(res));
@@ -17,8 +16,8 @@ class BuilderEcho implements HandlerBuilder {
   }
 }
 
-class BuilderSquare implements HandlerBuilder {
-  build(conf?: Map<string, any>): Handler {
+class Square implements HandlerBuilder {
+  buildHandler(conf?: Map<string, any>): Handler {
     return {
       async handle(res: Res): Promise<Res> {
         return {
@@ -31,8 +30,8 @@ class BuilderSquare implements HandlerBuilder {
   }
 }
 
-class BuilderDelay implements HandlerBuilder {
-  build(conf?: Map<string, any>): Handler {
+class Delay implements HandlerBuilder {
+  buildHandler(conf?: Map<string, any>): Handler {
     return {
       async handle(res: Res): Promise<Res> {
         if (conf) {
@@ -44,8 +43,8 @@ class BuilderDelay implements HandlerBuilder {
   }
 }
 
-class BuilderFailed implements HandlerBuilder {
-  build(conf?: Map<string, any>): Handler {
+class Failed implements HandlerBuilder {
+  buildHandler(conf?: Map<string, any>): Handler {
     return {
       async handle(res: Res): Promise<Res> {
         throw new Error("failed");
@@ -54,9 +53,22 @@ class BuilderFailed implements HandlerBuilder {
   }
 }
 
-export function mockHandlerBuilders() {
-  handlerBuilders.set("echo", new BuilderEcho());
-  handlerBuilders.set("square", new BuilderSquare());
-  handlerBuilders.set("delay", new BuilderDelay());
-  handlerBuilders.set("failed", new BuilderFailed());
-}
+export const HandlerBuilderEcho = new Echo();
+export const HandlerBuilderSquare = new Square();
+export const HandlerBuilderDelay = new Delay();
+export const HandlerBuilderFailed = new Failed();
+
+export const TestBuilders = {
+  getBuilder(name: string): HandlerBuilder {
+    const builder = new Map<string, HandlerBuilder>([
+      ["echo", HandlerBuilderEcho],
+      ["square", HandlerBuilderSquare],
+      ["delay", HandlerBuilderDelay],
+      ["failed", HandlerBuilderFailed],
+    ]).get(name);
+    if (!builder) {
+      throw Error("builder not found");
+    }
+    return builder;
+  },
+};

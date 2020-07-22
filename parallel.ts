@@ -1,5 +1,6 @@
-import { Handler, Res, Status } from "./handler.ts";
+import { Handler, HandlerGetter, Res, Status } from "./handler.ts";
 import { Pipe } from "./pipe.ts";
+import { HandlerBuilderGetter } from "./handler.ts";
 
 export class Parallel implements Handler {
   pipes: Pipe[];
@@ -25,11 +26,12 @@ export class Parallel implements Handler {
 
 export function buildParallel(
   conf: any[],
-  handlers?: Map<string, Handler>,
+  builders?: HandlerBuilderGetter,
+  handlers?: HandlerGetter,
 ): Parallel {
   let parallel = new Parallel();
   for (let pipeConf of conf) {
-    const pipe = new Pipe(pipeConf, handlers);
+    const pipe = new Pipe(pipeConf, builders, handlers);
     parallel.pipes.push(pipe);
   }
 
@@ -38,8 +40,9 @@ export function buildParallel(
 
 export function buildParallelWithJson(
   jsonConf: string,
-  handlers?: Map<string, Handler>,
+  builders?: HandlerBuilderGetter,
+  handlers?: HandlerGetter,
 ): Parallel {
   const conf = JSON.parse(jsonConf);
-  return buildParallel(conf, handlers);
+  return buildParallel(conf, builders, handlers);
 }

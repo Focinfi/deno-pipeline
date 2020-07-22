@@ -1,6 +1,7 @@
-import { Handler, Res, Status, handlerBuilders } from "./handler.ts";
+import { Handler, Res, Status } from "./handler.ts";
 import { buildParallel } from "./parallel.ts";
 import { delay } from "https://deno.land/std/async/mod.ts";
+import { HandlerBuilderGetter, HandlerGetter } from "./handler.ts";
 
 export const ErrRefHandlerNotFound = new Error("ref handler not found");
 export const ErrRefBuilderNotFound = new Error("ref builder not found");
@@ -35,9 +36,13 @@ export class Pipe implements Handler {
   builderConf?: Map<string, any>;
   desc?: string;
 
-  constructor(c: confInfo | confInfo[], handlers?: Map<string, Handler>) {
+  constructor(
+    c: confInfo | confInfo[],
+    builders?: HandlerBuilderGetter,
+    handlers?: HandlerGetter,
+  ) {
     if (Array.isArray(c)) {
-      const handler = buildParallel(c, handlers);
+      const handler = buildParallel(c, builders, handlers);
       this.conf = { timeout: 10000, required: true };
       this.type = PipeType.Parallel;
       this.handler = handler;
@@ -57,7 +62,7 @@ export class Pipe implements Handler {
       if (!handlers) {
         throw ErrRefHandlerNotFound;
       }
-      const handler = handlers.get(c.refId);
+      const handler = handlers.getHandler(c.refId);
       if (!handler) {
         throw ErrRefHandlerNotFound;
       }
@@ -67,15 +72,15 @@ export class Pipe implements Handler {
       return;
     }
 
-    if (!c.builderName) {
+    if (!c.builderName || !builders) {
       throw ErrRefBuilderNotFound;
     }
-    const builder = handlerBuilders.get(c.builderName);
+    const builder = builders.getBuilder(c.builderName);
     if (!builder) {
       throw ErrRefBuilderNotFound;
     }
     this.type = PipeType.Single;
-    this.handler = builder.build(c.builderConf);
+    this.handler = builder.buildHandler(c.builderConf);
   }
 
   async handle(res: Res): Promise<Res> {

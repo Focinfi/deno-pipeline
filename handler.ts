@@ -5,20 +5,26 @@ export enum Status {
   InternalFailed,
 }
 
-export interface Res {
+export type Res = {
   status: Status;
   meta?: object;
   data?: any;
   message?: string;
-}
+};
 
 export interface Handler {
   handle(res: Res): Promise<Res>;
   handleVerbosely?(res: Res): Promise<Res[]>;
 }
 
-export interface HandlerBuilder {
-  build(conf?: object): Handler;
+export interface HandlerGetter {
+  getHandler(id: string): Handler;
 }
 
-export let handlerBuilders = new Map<string, HandlerBuilder>();
+export interface HandlerBuilder {
+  buildHandler(conf?: object): Handler;
+}
+
+export interface HandlerBuilderGetter {
+  getBuilder(name: string): HandlerBuilder;
+}

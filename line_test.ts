@@ -3,10 +3,8 @@ import {
   assertThrowsAsync,
 } from "https://deno.land/std/testing/asserts.ts";
 import { Status } from "./handler.ts";
-import { mockHandlerBuilders } from "./mock_test.ts";
 import { buildLine, buildLineWithJson } from "./line.ts";
-
-mockHandlerBuilders();
+import { TestBuilders } from "./mock_test.ts";
 
 Deno.test({
   name: "build a new line",
@@ -22,7 +20,7 @@ Deno.test({
         required: true,
         builderName: "square",
       },
-    ]);
+    ], TestBuilders);
     const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
     assertEquals(status, Status.Ok);
     assertEquals(data, 16);
@@ -51,7 +49,7 @@ Deno.test({
           ["delay", 200],
         ]),
       },
-    ]);
+    ], TestBuilders);
 
     await assertThrowsAsync(
       async (): Promise<void> => {
@@ -77,7 +75,7 @@ Deno.test({
         required: true,
         builderName: "failed",
       },
-    ]);
+    ], TestBuilders);
 
     await assertThrowsAsync(
       async (): Promise<void> => {
@@ -104,7 +102,7 @@ Deno.test({
         defaultValue: 1,
         builderName: "failed",
       },
-    ]);
+    ], TestBuilders);
     const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
     assertEquals(status, Status.InternalFailed);
     assertEquals(data, 1);
@@ -114,7 +112,8 @@ Deno.test({
 Deno.test({
   name: "build with json",
   async fn(): Promise<void> {
-    const l = buildLineWithJson(`[
+    const l = buildLineWithJson(
+      `[
       {
         "timeout": 500,
         "required": true,
@@ -125,7 +124,9 @@ Deno.test({
         "required": true,
         "builderName": "square"
       }
-    ]`);
+    ]`,
+      TestBuilders,
+    );
     const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
     assertEquals(status, Status.Ok);
     assertEquals(data, 16);

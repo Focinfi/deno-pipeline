@@ -3,11 +3,10 @@ import {
   assertThrowsAsync,
 } from "https://deno.land/std/testing/asserts.ts";
 import { buildParallel } from "./parallel.ts";
-import { mockHandlerBuilders } from "./mock_test.ts";
 import { Status } from "./handler.ts";
+import { TestBuilders } from "./mock_test.ts";
 
 function buildMockDelayParallel(delay: number) {
-  mockHandlerBuilders();
   const delayMap = new Map<string, any>([
     ["delay", delay],
   ]);
@@ -30,7 +29,7 @@ function buildMockDelayParallel(delay: number) {
       required: true,
     },
   ];
-  return buildParallel(conf);
+  return buildParallel(conf, TestBuilders);
 }
 
 Deno.test({
