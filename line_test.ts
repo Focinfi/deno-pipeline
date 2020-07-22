@@ -4,7 +4,7 @@ import {
 } from "https://deno.land/std/testing/asserts.ts";
 import { Status } from "./handler.ts";
 import { mockHandlerBuilders } from "./mock_test.ts";
-import { buildLine } from "./line.ts";
+import { buildLine, buildLineWithJson } from "./line.ts";
 
 mockHandlerBuilders();
 
@@ -108,5 +108,26 @@ Deno.test({
     const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
     assertEquals(status, Status.InternalFailed);
     assertEquals(data, 1);
+  },
+});
+
+Deno.test({
+  name: "build with json",
+  async fn(): Promise<void> {
+    const l = buildLineWithJson(`[
+      {
+        "timeout": 500,
+        "required": true,
+        "builderName": "square"
+      },
+      {
+        "timeout": 500,
+        "required": true,
+        "builderName": "square"
+      }
+    ]`);
+    const { status, data } = await l.handle({ status: Status.Ok, data: 2 });
+    assertEquals(status, Status.Ok);
+    assertEquals(data, 16);
   },
 });
