@@ -2,7 +2,7 @@ export enum Status {
   New,
   Ok,
   Timeout,
-  InternalFailed
+  InternalFailed,
 }
 
 export interface Res {
@@ -21,4 +21,4 @@ export interface HandlerBuilder {
   build(conf?: object): Handler;
 }
 
-export let handelrBuilders = new Map<string, HandlerBuilder>();
+export let handlerBuilders = new Map<string, HandlerBuilder>();

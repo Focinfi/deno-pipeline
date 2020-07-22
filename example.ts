@@ -4,7 +4,7 @@ import {
   Status,
   HandlerBuilder,
   handelrBuilders,
-  buildLine
+  buildLine,
 } from "https://deno.land/x/pipeline/mod.ts";
 
 class BuilderSquare implements HandlerBuilder {
@@ -13,7 +13,7 @@ class BuilderSquare implements HandlerBuilder {
       async handle(res: Res): Promise<Res> {
         res.data = res.data * res.data;
         return res;
-      }
+      },
     };
   }
 }
@@ -23,14 +23,14 @@ let conf = [
   {
     builderName: "square",
     timeout: 100,
-    required: true
-  }
+    required: true,
+  },
 ];
 let line = buildLine(conf);
 line
   .handle({ status: Status.New, data: 2 })
-  .then(res => console.log("data:", res.data))
-  .catch(res => console.error(res.message));
+  .then((res) => console.log("data:", res.data))
+  .catch((res) => console.error(res.message));
 // Output:
 // data: 4
 
@@ -39,20 +39,20 @@ let refConf = [
   {
     refId: "my_square",
     timeout: 100,
-    required: true
+    required: true,
   },
   {
     builderName: "square",
     timeout: 100,
-    required: true
-  }
+    required: true,
+  },
 ];
 
 let refLine = buildLine(refConf, handlers);
 refLine
   .handle({ status: Status.New, data: 2 })
-  .then(res => console.log("ref line data:", res.data))
-  .catch(res => console.error(res.message));
+  .then((res) => console.log("ref line data:", res.data))
+  .catch((res) => console.error(res.message));
 // Output:
 // ref line data: 16
 
@@ -60,36 +60,36 @@ let parallelConf = [
   {
     refId: "my_square",
     timeout: 100,
-    required: true
+    required: true,
   },
   [
     {
       builderName: "square",
       timeout: 100,
-      required: true
+      required: true,
     },
     {
       builderName: "square",
       timeout: 100,
-      required: true
-    }
-  ]
+      required: true,
+    },
+  ],
 ];
 
 let parallelLine = buildLine(parallelConf, handlers);
 parallelLine
   .handle({ status: Status.New, data: 2 })
-  .then(res => console.log("parallel line data:", res.data))
-  .catch(res => console.error(res.message));
+  .then((res) => console.log("parallel line data:", res.data))
+  .catch((res) => console.error(res.message));
 // Output:
 // parallel line data: [ 16, 16 ]
 
 parallelLine
   .handleVerbosely({ status: Status.New, data: 2 })
-  .then(reses =>
+  .then((reses) =>
     reses.forEach((res, i) => console.log(i, "verbosely data:", res.data))
   )
-  .catch(reses => console.error(reses));
+  .catch((reses) => console.error(reses));
 // Output:
 // 0 verbosely data: 4
 // 1 verbosely data: [ 16, 16 ]

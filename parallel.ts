@@ -11,21 +11,21 @@ export class Parallel implements Handler {
   /** Handle the res, run pipes concrrently */
   async handle(res: Res): Promise<Res> {
     let reses = await Promise.all(
-      this.pipes.map(pipe => {
+      this.pipes.map((pipe) => {
         return pipe.handle(res);
-      })
+      }),
     );
 
     return {
       status: Status.Ok,
-      data: reses.map(res => res.data)
+      data: reses.map((res) => res.data),
     };
   }
 }
 
 export function buildParallel(
   conf: any[],
-  handlers?: Map<string, Handler>
+  handlers?: Map<string, Handler>,
 ): Parallel {
   let parallel = new Parallel();
   for (let pipeConf of conf) {
@@ -38,7 +38,7 @@ export function buildParallel(
 
 export function buildParallelWithJson(
   jsonConf: string,
-  handlers?: Map<string, Handler>
+  handlers?: Map<string, Handler>,
 ): Parallel {
   const conf = JSON.parse(jsonConf);
   return buildParallel(conf, handlers);
