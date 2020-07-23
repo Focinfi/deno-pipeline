@@ -86,7 +86,7 @@ export class Pipe implements Handler {
   async handle(res: Res): Promise<Res> {
     // run handler.handle directly for a Parallel Pipe
     if (this.type == PipeType.Parallel) {
-      return await this.handler.handle(res);
+      return this.handler.handle(res);
     }
     let rt: Res = {
       status: Status.New,

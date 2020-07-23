@@ -34,7 +34,7 @@ let conf = [
 let line = buildLine(conf, builders);
 line
   .handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("data:", res.data))
+  .then((res) => console.log(`data: ${res.data}`))
   .catch((res) => console.error(res.message));
 // Output:
 // data: 4
@@ -61,7 +61,7 @@ const handlers = {
 let refLine = buildLine(refConf, builders, handlers);
 refLine
   .handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("ref line data:", res.data))
+  .then((res) => console.log(`ref line data: ${res.data}`))
   .catch((res) => console.error(res.message));
 // Output:
 // ref line data: 16
@@ -89,19 +89,19 @@ let parallelConf = [
 let parallelLine = buildLine(parallelConf, builders, handlers);
 parallelLine
   .handle({ status: Status.New, data: 2 })
-  .then((res) => console.log("parallel line data:", res.data))
+  .then((res) => console.log(`parallel line data: ${res.data}`))
   .catch((res) => console.error(res.message));
 // Output:
-// parallel line data: [ 16, 16 ]
+// parallel line data: 16, 16
 
 parallelLine
   .handleVerbosely({ status: Status.New, data: 2 })
   .then((reses) =>
     reses.forEach((res, i) =>
-      console.log("pipe[", i + 1, "] response:", res.data)
+      console.log(`pipe[${i + 1}] response: ${res.data}`)
     )
   )
   .catch((reses) => console.error(reses));
 // Output:
-// 1 verbosely data: 4
-// 2 verbosely data: [ 16, 16 ]
+// pipe[1] response: 4
+// pipe[2] response: 16,16

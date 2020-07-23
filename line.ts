@@ -27,7 +27,7 @@ export class Line implements Handler {
 
   /** Handle the res, return a list of Res for every step*/
   async handleVerbosely(res: Res): Promise<Res[]> {
-    let reses = new Array();
+    let reses = [];
     for (const pipe of this.pipes) {
       res = await pipe.handle(res);
       reses.push(JSON.parse(JSON.stringify(res)));
