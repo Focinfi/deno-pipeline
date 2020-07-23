@@ -18,7 +18,7 @@ export type PipeConf = {
 };
 
 export type confInfo = {
-  refId?: string;
+  refName?: string;
   builderName?: string;
   builderConf?: Map<string, any>;
   desc?: string;
@@ -31,7 +31,7 @@ export class Pipe implements Handler {
   type: PipeType;
   conf: PipeConf;
   handler: Handler;
-  refId?: string;
+  refName?: string;
   builderName?: string;
   builderConf?: Map<string, any>;
   desc?: string;
@@ -53,16 +53,16 @@ export class Pipe implements Handler {
       throw Error("default value not set when a pipe is required");
     }
     this.conf = c as PipeConf;
-    this.refId = c.refId;
+    this.refName = c.refName;
     this.builderName = c.builderName;
     this.builderConf = c.builderConf;
     this.desc = c.desc;
 
-    if (c.refId) {
+    if (c.refName) {
       if (!handlers) {
         throw ErrRefHandlerNotFound;
       }
-      const handler = handlers.getHandler(c.refId);
+      const handler = handlers.getHandler(c.refName);
       if (!handler) {
         throw ErrRefHandlerNotFound;
       }

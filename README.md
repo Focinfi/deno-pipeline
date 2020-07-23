@@ -7,7 +7,7 @@ Configurable data pipeline in Deno.
 Data processing defined by `Handler`s like Unix pipeline. 
 
 ```typescript
-export interface Res {
+export type Res {
   status: Status;
   meta?: object;
   data?: any;
@@ -24,7 +24,7 @@ Based on the `Handler`, we need to make some tools:
 1. `HandlerBuilder`: build a `Handler` with config.
 ```typescript
   export interface HandlerBuilder {
-    build(conf?: object): Handler;
+    buildHandler(conf?: Map<string, any>): Handler;
   }
 ```
 2. `Pipe`:
@@ -48,12 +48,11 @@ import {
   Res,
   Status,
   HandlerBuilder,
-  handelrBuilders,
   buildLine
 } from "https://deno.land/x/pipeline/mod.ts";
 
 class BuilderSquare implements HandlerBuilder {
-  build(conf?: Map<string, any>): Handler {
+  buildHandler(conf?: Map<string, any>): Handler {
     return {
       async handle(res: Res): Promise<Res> {
         res.data = res.data * res.data;
@@ -62,11 +61,21 @@ class BuilderSquare implements HandlerBuilder {
     };
   }
 }
-handelrBuilders.set("square", new BuilderSquare())
+const testBuilders = {
+  getBuilder(name: string): HandlerBuilder {
+    const builder = new Map<string, HandlerBuilder>([
+      ["square", HandlerBuilderSquare],
+    ]).get(name);
+    if (!builder) {
+      throw Error("builder not found");
+    }
+    return builder;
+  },
+};
 ```
 
 ### Build a `Line` with config
-1. `builderName`: key in `handlerBuilders`
+1. `builderName`: key in `TestBuilders`
 2. `builderConf`: pass to `HandlerBuilder` to build a `Handler`
 
 ```typescript
@@ -77,7 +86,7 @@ let conf = [
     required: true
   }
 ];
-let line = buildLine(conf);
+let line = buildLine(conf, testBuilders);
 line
   .handle({ status: Status.New, data: 2 })
   .then(res => console.log("data:", res.data))
@@ -87,13 +96,17 @@ line
 ```
 
 ### Build a `Line` contains a referenced `Handler`
-1. `refId`: exsiting key of `Handler` in the `handlers`
+1. `refName`: the name of exsiting `Handler` in the `handlers`
 
 ```typescript
-let handlers = new Map<string, Handler>([["my_square", line]]);
+const handlers = {
+  getHandler(name: string): Handler {
+    return builders.getBuilder("square").buildHandler();
+  },
+};
 let refConf = [
   {
-    refId: "my_square",
+    refName: "my_square",
     timeout: 100,
     required: true
   },
@@ -104,7 +117,7 @@ let refConf = [
   }
 ];
 
-let refLine = buildLine(refConf, handlers);
+let refLine = buildLine(refConf, testBuilders, handlers);
 refLine
   .handle({ status: Status.New, data: 2 })
   .then(res => console.log("ref line data:", res.data))
@@ -119,7 +132,7 @@ Array Item will act as a `Parallel`, return a list of data returned by every pip
 ```typescript
 let parallelConf = [
   {
-    refId: "my_square",
+    refName: "my_square",
     timeout: 100,
     required: true
   },
@@ -137,7 +150,7 @@ let parallelConf = [
   ]
 ];
 
-let parallelLine = buildLine(parallelConf, handlers);
+let parallelLine = buildLine(parallelConf, testBuilders, handlers);
 parallelLine
   .handle({ status: Status.New, data: 2 })
   .then(res => console.log("parallel line data:", res.data))

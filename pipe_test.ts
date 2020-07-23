@@ -11,7 +11,7 @@ Deno.test({
   fn(): void {
     assertThrows(() => {
       new Pipe({
-        refId: "unknown",
+        refName: "unknown",
         timeout: 1000,
         required: true,
       });
@@ -56,11 +56,11 @@ Deno.test({
       {
         timeout: 1000,
         required: true,
-        refId: "echo-demo",
+        refName: "echo-demo",
       },
       TestBuilders,
       {
-        getHandler(id: string): Handler {
+        getHandler(name: string): Handler {
           return HandlerBuilderEcho.buildHandler();
         },
       },
@@ -69,7 +69,7 @@ Deno.test({
     assertEquals(p.conf, {
       timeout: 1000,
       required: true,
-      refId: "echo-demo",
+      refName: "echo-demo",
     });
   },
 });

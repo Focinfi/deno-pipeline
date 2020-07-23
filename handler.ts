@@ -18,11 +18,11 @@ export interface Handler {
 }
 
 export interface HandlerGetter {
-  getHandler(id: string): Handler;
+  getHandler(name: string): Handler;
 }
 
 export interface HandlerBuilder {
-  buildHandler(conf?: object): Handler;
+  buildHandler(conf?: Map<string, any>): Handler;
 }
 
 export interface HandlerBuilderGetter {

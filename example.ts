@@ -53,7 +53,7 @@ let refConf = [
 ];
 
 const handlers = {
-  getHandler(id: string): Handler {
+  getHandler(name: string): Handler {
     return builders.getBuilder("square").buildHandler();
   },
 };
@@ -92,7 +92,7 @@ parallelLine
   .then((res) => console.log(`parallel line data: ${res.data}`))
   .catch((res) => console.error(res.message));
 // Output:
-// parallel line data: 16, 16
+// parallel line data: 16, 16]
 
 parallelLine
   .handleVerbosely({ status: Status.New, data: 2 })
